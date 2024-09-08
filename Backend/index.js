@@ -28,4 +28,7 @@ const connectDB = async () => {
   }
 };
 
+app.use(express.json({ limit: "16kb" }));
+app.use(express.static("public"));
+
 connectDB();
