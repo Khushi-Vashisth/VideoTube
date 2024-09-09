@@ -21,7 +21,7 @@ const connectDB = async () => {
       `\n MongoDB connected !! DB Host : ${connection.connection.host}`
     );
     app.listen(process.env.PORT || 8000, () => {
-      console.log(` ^.^ Server running at port : -- ${process.env.PORT}`);
+      console.log(` ⚙️ Server running at port : -- ${process.env.PORT}`);
     });
   } catch (error) {
     console.log("\n MONGODB CONNECTION ERROR !!!!", error);
@@ -39,7 +39,3 @@ import userRouter from "./src/routes/user.route.js";
 
 //Declaration of Routes
 app.use("/api/v1", userRouter);
-
-app.get("/", (req, res) => {
-  res.send("welcome");
-});
