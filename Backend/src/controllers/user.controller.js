@@ -12,16 +12,17 @@ const registerUser = AsyncHandler(async (req, res) => {
     return res.status(400).json("All fields are required");
 
   // check if User already
-  const alreadyExistUser = User.findOne({
+  const alreadyExistUser = await User.findOne({
     $or: [{ username }, { email }],
   });
 
   if (alreadyExistUser) return res.status(400).json("User already exists");
 
   //get images or avatar
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0].path;
-  if (!avatarLocalPath) return res.status(400).json("Avatar file is required");
+  const avatarLocalPath = await req.files?.avatar[0].path;
+  console.log("Avatar file local path : ", avatarLocalPath);
+  const coverImageLocalPath = await req.files?.coverImage[0].path;
+  if (!avatarLocalPath) res.status(400).json("Avatar file is required");
 
   // upload files on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
@@ -45,7 +46,7 @@ const registerUser = AsyncHandler(async (req, res) => {
     return res.status(500).json("Something went wrong while registering user");
 
   //final response
-  return res.status(200).json({ iscreated });
+  return res.status(200).json(`Created user : ${iscreated}`);
 });
 
 export { registerUser };
