@@ -28,6 +28,24 @@ const registerUser = AsyncHandler(async (req, res) => {
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) return res.status(400).json("Avatar is required");
+
+  // create entry in DB
+  const user = await User.create({
+    fullName,
+    avatar: avatar.url,
+    coverImage: coverImage?.url || "",
+    email,
+    password,
+    username: username.toLowerCase(),
+  });
+
+  // check (user created or not)
+  const iscreated = await User.findById(user._id);
+  if (!iscreated)
+    return res.status(500).json("Something went wrong while registering user");
+
+  //final response
+  return res.status(200).json({ iscreated });
 });
 
 export { registerUser };
