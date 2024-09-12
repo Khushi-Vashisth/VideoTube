@@ -22,7 +22,7 @@ const registerUser = AsyncHandler(async (req, res) => {
   const avatarLocalPath = await req.files?.avatar[0].path;
   console.log("Avatar file local path : ", avatarLocalPath);
   const coverImageLocalPath = await req.files?.coverImage[0].path;
-  if (!avatarLocalPath) res.status(400).json("Avatar file is required");
+  if (!avatarLocalPath) return res.status(400).json("Avatar file is required");
 
   // upload files on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
