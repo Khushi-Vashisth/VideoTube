@@ -13,6 +13,9 @@ app.use(
   })
 );
 
+app.use(express.static("public"));
+app.use(cookieParser());
+
 //MONGODB CONNECTION
 const connectDB = async () => {
   try {
