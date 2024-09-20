@@ -4,11 +4,13 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
   loginUser,
   logOutUser,
+  refreshAccessToken,
   registerUser,
 } from "../controllers/user.controller.js";
 
 const router = Router();
 
+//register route with multer
 router.route("/register").post(
   upload.fields([
     {
@@ -23,8 +25,11 @@ router.route("/register").post(
   registerUser
 );
 
+//login route
 router.route("/login").post(loginUser);
 
+//logout
 router.route("/logout").post(verifyJWT, logOutUser);
+router.route("/refreshtoken").post(refreshAccessToken);
 
 export default router;
