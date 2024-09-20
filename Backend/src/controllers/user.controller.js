@@ -2,11 +2,14 @@ import { AsyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/apiError.js";
-import cookieParser from "cookie-parser";
+import { ApiResponse } from "../utils/apiResponse.js";
 
 const generateAccessAndRefreshToken = async (userID) => {
   try {
     const user = await User.findById(userID);
+    if (!user) {
+      throw new ApiError(404, "user not found");
+    }
     const refreshToken = user.generateRefreshToken();
     const accessToken = user.generateAccessToken();
 
@@ -76,21 +79,22 @@ const loginUser = AsyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
   //check for username or email
-  if (!username || !email) {
+  if (!(username || email)) {
     throw new ApiError(400, "Username or Email is required");
   }
-
   //find on the basis of username or email
   const user = await User.findOne({
     $or: [{ username }, { email }],
   });
+
+  console.log(user);
 
   if (!user) {
     throw new ApiError(404, "user does not exist");
   }
 
   //check the password
-  const isPasswordValid = findUser.isPasswordCorrect(password);
+  const isPasswordValid = user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "check password and try again");

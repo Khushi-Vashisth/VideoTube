@@ -2,10 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 dotenv.config();
+
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -15,6 +17,8 @@ app.use(
 
 app.use(express.static("public"));
 app.use(cookieParser());
+app.use(express.json({ limit: "16kb" }));
+app.use(express.static("public"));
 
 //MONGODB CONNECTION
 const connectDB = async () => {
@@ -31,9 +35,6 @@ const connectDB = async () => {
     process.exit(0);
   }
 };
-
-app.use(express.json({ limit: "16kb" }));
-app.use(express.static("public"));
 
 connectDB();
 
