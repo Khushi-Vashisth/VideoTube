@@ -192,4 +192,77 @@ const refreshAccessToken = AsyncHandler(async (req, res) => {
   }
 });
 
-export { registerUser, loginUser, logOutUser, refreshAccessToken };
+const changePassword = AsyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) throw new ApiError(401, "Incorrect Password");
+
+  user.password = newPassword;
+  await user.save();
+
+  return res.status(200).json(200, {}, "Password changed successfully");
+});
+
+const fetchCurrentUser = AsyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(200, req.user, "current user fetched successfully");
+});
+
+const updateUserDetails = AsyncHandler(async (req, res) => {
+  const { fullName, email } = req.body;
+
+  const user = User.findByIdAndUpdate(req.user?._id, {
+    $set: { fullName, email },
+  });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "account details updated successfully"));
+});
+
+const updateAvatarImage = AsyncHandler(async (req, res) => {
+  const avatarLocalPath = req.file?.path;
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) throw new ApiError(400, "Error while updating avatar");
+
+  const user = User.findByIdAndUpdate(req.user._id, {
+    $set: {
+      avatar: avatar.url,
+    },
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "cover image updated"));
+});
+
+const updateCoverImage = AsyncHandler(async (req, res) => {
+  const coverLocalPath = req.file?.path;
+  const coverImage = await uploadOnCloudinary(coverLocalPath);
+  if (!coverImage.url)
+    throw new ApiError(400, "Error while updating cover image");
+
+  const user = User.findByIdAndUpdate(req.user?._id, {
+    $set: {
+      coverImage: coverImage.url,
+    },
+  });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "cover image updated"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logOutUser,
+  refreshAccessToken,
+  changePassword,
+  updateUserDetails,
+  fetchCurrentUser,
+  updateAvatarImage,
+};
